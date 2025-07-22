@@ -268,11 +268,9 @@ services:
         limits:
           memory: 250M
     restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT}"
     environment:
-      - PORT=${FRONTEND_PORT}
-      - FRONTEND_ADDR
+      - PORT=3000
+      - FRONTEND_ADDR=frontend:3000
       - AD_ADDR
       - CART_ADDR
       - CHECKOUT_ADDR
@@ -328,11 +326,12 @@ services:
           memory: 65M
     restart: unless-stopped
     ports:
-      - "${ENVOY_PORT}:${ENVOY_PORT}"
-      - 10000:10000
+      - "8080:8080"
+      - "10000:10000"
     environment:
-      - FRONTEND_PORT
-      - FRONTEND_HOST
+      - FRONTEND_PORT=3000
+      - FRONTEND_HOST=frontend
+      - ENVOY_PORT=8080
       - LOCUST_WEB_HOST
       - LOCUST_WEB_PORT
       - GRAFANA_PORT
@@ -346,7 +345,6 @@ services:
       - OTEL_COLLECTOR_PORT_HTTP
       - OTEL_RESOURCE_ATTRIBUTES
       - OTEL_SERVICE_NAME=frontend-proxy
-      - ENVOY_PORT
       - FLAGD_HOST
       - FLAGD_PORT
       - FLAGD_UI_HOST
@@ -643,7 +641,7 @@ services:
 
   # Kafka used by Checkout, Accounting, and Fraud Detection services
   kafka:
-    image: ${IMAGE_NAME}:${DEMO_VERSION}-kafka
+    image: ghcr.io/open-telemetry/demo:1.12.0-kafka
     container_name: kafka
     build:
       context: ./
